@@ -11,8 +11,12 @@
         #fruits-display { font-size: 1.8em; margin: 25px 0; min-height: 120px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; background-color: #f1f8e9; border-radius: 10px; padding: 10px; }
         .fruit-item { margin: 2px; }
         #number-equation { font-size: 3em; margin: 30px 0; color: #37474f; font-weight: bold; }
-        input { font-size: 2em; padding: 10px; width: 120px; text-align: center; border: 3px solid #b2dfdb; border-radius: 10px; }
-        button.check-btn { font-size: 1.5em; padding: 10px 25px; cursor: pointer; background-color: #00897b; color: white; border: none; border-radius: 10px; }
+        
+        /* 3지선다 버튼 스타일 */
+        .choices { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .choice-btn { font-size: 1.5em; padding: 15px 30px; cursor: pointer; background-color: #ffffff; border: 3px solid #00897b; border-radius: 15px; color: #00897b; font-weight: bold; transition: 0.2s; }
+        .choice-btn:hover { background-color: #00897b; color: white; }
+        
         #feedback { font-size: 1.5em; margin-top: 20px; font-weight: bold; min-height: 40px; }
         .level-btn { font-size: 1em; padding: 10px 15px; margin: 5px; cursor: pointer; border: none; border-radius: 8px; color: white; }
     </style>
@@ -25,11 +29,11 @@
     <div id="fruits-display"></div>
     <div id="number-equation" style="display: none;"></div>
 
-    <input type="number" id="answer" placeholder="?" autofocus>
-    <button class="check-btn" onclick="checkAnswer()">정답 확인</button>
+    <div class="choices" id="choices-container">
+        </div>
     
     <div id="feedback"></div>
-    <div id="score" style="margin-top:10px;">점수: 0</div>
+    <div id="score" style="margin-top:20px;">점수: 0</div>
     
     <hr>
     <div>
@@ -91,30 +95,36 @@
             }
             document.getElementById('number-equation').innerText = `${num1} ${type} ${num2} = ?`;
         }
-        document.getElementById('answer').value = '';
-        document.getElementById('answer').focus();
+
+        // 3지선다 보기 생성
+        createChoices();
+        document.getElementById('feedback').innerText = "";
     }
 
-    function checkAnswer() {
-        const val = parseInt(document.getElementById('answer').value);
-        if (isNaN(val)) return;
+    function createChoices() {
+        const container = document.getElementById('choices-container');
+        container.innerHTML = '';
         
-        if (val === currentAnswer) {
+        // 오답 2개 생성
+        let choices = [currentAnswer];
+        while(choices.length < 3) {
+            let fake = Math.floor(Math.random() * (currentLevel === 1 ? 10 : (currentLevel === 2 ? 100 : 200))) + 1;
+            if(!choices.includes(fake)) choices.push(fake);
+        }
+        // 보기 섞기
+        choices.sort(() => Math.random() - 0.5);
+        
+        choices.forEach(val => {
+            let btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerText = val;
+            btn.onclick = () => checkAnswer(val);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(userChoice) {
+        if (userChoice === currentAnswer) {
             score += 10;
             document.getElementById('feedback').innerText = "정답! 참 잘했어요! 🎉";
-        } else {
-            document.getElementById('feedback').innerText = `아쉬워요! 정답은 ${currentAnswer}였어요.`;
-        }
-        document.getElementById('score').innerText = `점수: ${score}`;
-        setTimeout(generateQuestion, 1500);
-    }
-
-    // 엔터키 작동
-    document.getElementById('answer').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') checkAnswer();
-    });
-
-    setLevel(1);
-</script>
-</body>
-</html>
+            document.getElementById('feedback
