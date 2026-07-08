@@ -11,12 +11,9 @@
         #fruits-display { font-size: 1.8em; margin: 25px 0; min-height: 120px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; background-color: #f1f8e9; border-radius: 10px; padding: 10px; }
         .fruit-item { margin: 2px; }
         #number-equation { font-size: 3em; margin: 30px 0; color: #37474f; font-weight: bold; }
-        
-        /* 3지선다 버튼 스타일 */
         .choices { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
         .choice-btn { font-size: 1.5em; padding: 15px 30px; cursor: pointer; background-color: #ffffff; border: 3px solid #00897b; border-radius: 15px; color: #00897b; font-weight: bold; transition: 0.2s; }
         .choice-btn:hover { background-color: #00897b; color: white; }
-        
         #feedback { font-size: 1.5em; margin-top: 20px; font-weight: bold; min-height: 40px; }
         .level-btn { font-size: 1em; padding: 10px 15px; margin: 5px; cursor: pointer; border: none; border-radius: 8px; color: white; }
     </style>
@@ -29,8 +26,7 @@
     <div id="fruits-display"></div>
     <div id="number-equation" style="display: none;"></div>
 
-    <div class="choices" id="choices-container">
-        </div>
+    <div class="choices" id="choices-container"></div>
     
     <div id="feedback"></div>
     <div id="score" style="margin-top:20px;">점수: 0</div>
@@ -38,7 +34,7 @@
     <hr>
     <div>
         난이도 선택: 
-        <button onclick="setLevel(1)" class="level-btn" style="background-color: #4caf50;">1단계 (합 10 이하)</button>
+        <button onclick="setLevel(1)" class="level-btn" style="background-color: #4caf50;">1단계 (더하기만)</button>
         <button onclick="setLevel(2)" class="level-btn" style="background-color: #2196f3;">2단계 (1~50)</button>
         <button onclick="setLevel(3)" class="level-btn" style="background-color: #f44336;">3단계 (1~100)</button>
     </div>
@@ -52,41 +48,36 @@
         currentLevel = lvl;
         score = 0;
         document.getElementById('score').innerText = "점수: 0";
-        document.getElementById('level-info').innerText = lvl === 1 ? "1단계: 10 이하 더하기/빼기" : `${lvl}단계 (${lvl === 2 ? 50 : 100}까지)`;
+        document.getElementById('level-info').innerText = lvl === 1 ? "1단계: 10 이하 더하기" : `${lvl}단계 (${lvl === 2 ? 50 : 100}까지 혼합)`;
         
-        if (lvl === 1) {
-            document.getElementById('fruits-display').style.display = 'flex';
-            document.getElementById('number-equation').style.display = 'none';
-        } else {
-            document.getElementById('fruits-display').style.display = 'none';
-            document.getElementById('number-equation').style.display = 'block';
-        }
+        document.getElementById('fruits-display').style.display = lvl === 1 ? 'flex' : 'none';
+        document.getElementById('number-equation').style.display = lvl === 1 ? 'none' : 'block';
         generateQuestion();
     }
 
     function generateQuestion() {
-        let num1, num2, type = Math.random() > 0.5 ? '+' : '-';
+        let num1, num2, type;
         
         if (currentLevel === 1) {
+            // 1단계: 더하기만 (합 10 이하)
+            type = '+';
             num1 = Math.floor(Math.random() * 9) + 1;
-            if (type === '+') {
-                num2 = Math.floor(Math.random() * (10 - num1)) + 1;
-            } else {
-                num2 = Math.floor(Math.random() * num1) + 1;
-            }
-            currentAnswer = type === '+' ? num1 + num2 : num1 - num2;
+            num2 = Math.floor(Math.random() * (10 - num1)) + 1;
+            currentAnswer = num1 + num2;
             
             let displayHTML = "";
-            let f1 = fruits[Math.floor(Math.random() * fruits.length)];
-            let f2 = fruits[Math.floor(Math.random() * fruits.length)];
-            for(let i=0; i<num1; i++) displayHTML += `<span class="fruit-item">${f1}</span>`;
-            displayHTML += `<span style="margin:0 10px">${type === '+' ? '+' : '-'}</span>`;
-            for(let i=0; i<num2; i++) displayHTML += `<span class="fruit-item">${f2}</span>`;
+            let f = fruits[Math.floor(Math.random() * fruits.length)];
+            for(let i=0; i<num1; i++) displayHTML += `<span class="fruit-item">${f}</span>`;
+            displayHTML += `<span style="margin:0 10px">+</span>`;
+            for(let i=0; i<num2; i++) displayHTML += `<span class="fruit-item">${f}</span>`;
             document.getElementById('fruits-display').innerHTML = displayHTML;
         } else {
+            // 2, 3단계: 더하기 빼기 혼합
+            type = Math.random() > 0.5 ? '+' : '-';
             const max = currentLevel === 2 ? 50 : 100;
             num1 = Math.floor(Math.random() * max) + 1;
             num2 = Math.floor(Math.random() * max) + 1;
+            
             if (type === '-') {
                 if (num1 < num2) [num1, num2] = [num2, num1];
                 currentAnswer = num1 - num2;
@@ -96,7 +87,6 @@
             document.getElementById('number-equation').innerText = `${num1} ${type} ${num2} = ?`;
         }
 
-        // 3지선다 보기 생성
         createChoices();
         document.getElementById('feedback').innerText = "";
     }
@@ -104,16 +94,15 @@
     function createChoices() {
         const container = document.getElementById('choices-container');
         container.innerHTML = '';
-        
-        // 오답 2개 생성
         let choices = [currentAnswer];
-        while(choices.length < 3) {
-            let fake = Math.floor(Math.random() * (currentLevel === 1 ? 10 : (currentLevel === 2 ? 100 : 200))) + 1;
-            if(!choices.includes(fake)) choices.push(fake);
-        }
-        // 보기 섞기
-        choices.sort(() => Math.random() - 0.5);
         
+        while(choices.length < 3) {
+            let offset = Math.floor(Math.random() * 5) + 1;
+            let fake = Math.random() > 0.5 ? currentAnswer + offset : currentAnswer - offset;
+            if (fake > 0 && !choices.includes(fake)) choices.push(fake);
+        }
+        
+        choices.sort(() => Math.random() - 0.5);
         choices.forEach(val => {
             let btn = document.createElement('button');
             btn.className = 'choice-btn';
@@ -123,8 +112,20 @@
         });
     }
 
-    function checkAnswer(userChoice) {
-        if (userChoice === currentAnswer) {
+    function checkAnswer(val) {
+        if (val === currentAnswer) {
             score += 10;
             document.getElementById('feedback').innerText = "정답! 참 잘했어요! 🎉";
-            document.getElementById('feedback
+            document.getElementById('feedback').style.color = "#2e7d32";
+        } else {
+            document.getElementById('feedback').innerText = `아쉬워요! 정답은 ${currentAnswer}였습니다.`;
+            document.getElementById('feedback').style.color = "#c62828";
+        }
+        document.getElementById('score').innerText = `점수: ${score}`;
+        setTimeout(generateQuestion, 1500);
+    }
+
+    setLevel(1);
+</script>
+</body>
+</html>
