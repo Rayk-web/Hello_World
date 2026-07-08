@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <title>알록달록 과일 산수 퀴즈</title>
     <style>
-        body { font-family: 'Jua', sans-serif; text-align: center; background-color: #e0f7fa; padding: 20px; }
+        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background-color: #e0f7fa; padding: 20px; }
         #game-container { background: white; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 6px 20px rgba(0,0,0,0.15); width: 90%; max-width: 650px; }
         h1 { color: #00695c; }
         #level-info { font-size: 1.3em; color: #00796b; margin-bottom: 15px; font-weight: bold; }
-        #fruits-display { font-size: 1.5em; margin: 25px 0; min-height: 120px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; background-color: #f1f8e9; border-radius: 10px; padding: 10px; }
+        #fruits-display { font-size: 1.8em; margin: 25px 0; min-height: 120px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; background-color: #f1f8e9; border-radius: 10px; padding: 10px; }
         .fruit-item { margin: 2px; }
-        #number-equation { font-size: 3.5em; margin: 30px 0; color: #37474f; font-weight: bold; }
+        #number-equation { font-size: 3em; margin: 30px 0; color: #37474f; font-weight: bold; }
         input { font-size: 2em; padding: 10px; width: 120px; text-align: center; border: 3px solid #b2dfdb; border-radius: 10px; }
         button.check-btn { font-size: 1.5em; padding: 10px 25px; cursor: pointer; background-color: #00897b; color: white; border: none; border-radius: 10px; }
-        #feedback { font-size: 1.8em; margin-top: 20px; font-weight: bold; min-height: 40px; }
-        .level-btn { font-size: 1em; padding: 8px 15px; margin: 5px; cursor: pointer; border: none; border-radius: 8px; color: white; }
+        #feedback { font-size: 1.5em; margin-top: 20px; font-weight: bold; min-height: 40px; }
+        .level-btn { font-size: 1em; padding: 10px 15px; margin: 5px; cursor: pointer; border: none; border-radius: 8px; color: white; }
     </style>
 </head>
 <body>
@@ -49,10 +49,72 @@
         score = 0;
         document.getElementById('score').innerText = "점수: 0";
         document.getElementById('level-info').innerText = lvl === 1 ? "1단계: 10 이하 더하기/빼기" : `${lvl}단계 (${lvl === 2 ? 50 : 100}까지)`;
-        document.getElementById('fruits-display').style.display = lvl === 1 ? 'flex' : 'none';
-        document.getElementById('number-equation').style.display = lvl === 1 ? 'none' : 'block';
+        
+        if (lvl === 1) {
+            document.getElementById('fruits-display').style.display = 'flex';
+            document.getElementById('number-equation').style.display = 'none';
+        } else {
+            document.getElementById('fruits-display').style.display = 'none';
+            document.getElementById('number-equation').style.display = 'block';
+        }
         generateQuestion();
     }
 
     function generateQuestion() {
-        let num1, num
+        let num1, num2, type = Math.random() > 0.5 ? '+' : '-';
+        
+        if (currentLevel === 1) {
+            num1 = Math.floor(Math.random() * 9) + 1;
+            if (type === '+') {
+                num2 = Math.floor(Math.random() * (10 - num1)) + 1;
+            } else {
+                num2 = Math.floor(Math.random() * num1) + 1;
+            }
+            currentAnswer = type === '+' ? num1 + num2 : num1 - num2;
+            
+            let displayHTML = "";
+            let f1 = fruits[Math.floor(Math.random() * fruits.length)];
+            let f2 = fruits[Math.floor(Math.random() * fruits.length)];
+            for(let i=0; i<num1; i++) displayHTML += `<span class="fruit-item">${f1}</span>`;
+            displayHTML += `<span style="margin:0 10px">${type === '+' ? '+' : '-'}</span>`;
+            for(let i=0; i<num2; i++) displayHTML += `<span class="fruit-item">${f2}</span>`;
+            document.getElementById('fruits-display').innerHTML = displayHTML;
+        } else {
+            const max = currentLevel === 2 ? 50 : 100;
+            num1 = Math.floor(Math.random() * max) + 1;
+            num2 = Math.floor(Math.random() * max) + 1;
+            if (type === '-') {
+                if (num1 < num2) [num1, num2] = [num2, num1];
+                currentAnswer = num1 - num2;
+            } else {
+                currentAnswer = num1 + num2;
+            }
+            document.getElementById('number-equation').innerText = `${num1} ${type} ${num2} = ?`;
+        }
+        document.getElementById('answer').value = '';
+        document.getElementById('answer').focus();
+    }
+
+    function checkAnswer() {
+        const val = parseInt(document.getElementById('answer').value);
+        if (isNaN(val)) return;
+        
+        if (val === currentAnswer) {
+            score += 10;
+            document.getElementById('feedback').innerText = "정답! 참 잘했어요! 🎉";
+        } else {
+            document.getElementById('feedback').innerText = `아쉬워요! 정답은 ${currentAnswer}였어요.`;
+        }
+        document.getElementById('score').innerText = `점수: ${score}`;
+        setTimeout(generateQuestion, 1500);
+    }
+
+    // 엔터키 작동
+    document.getElementById('answer').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') checkAnswer();
+    });
+
+    setLevel(1);
+</script>
+</body>
+</html>
