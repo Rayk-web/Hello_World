@@ -1,120 +1,63 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>알록달록 과일 산수 퀴즈</title>
+    <title>과일 산수 게임</title>
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background-color: #e0f7fa; padding: 20px; }
-        #game-container { background: white; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 6px 20px rgba(0,0,0,0.15); width: 90%; max-width: 600px; margin-top: 20px; }
-        h1 { color: #00695c; font-size: 1.8em; }
-        #level-info { font-size: 1.2em; color: #00796b; margin-bottom: 15px; font-weight: bold; }
-        #fruits-display { font-size: 2em; margin: 20px 0; min-height: 80px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; background-color: #f1f8e9; border-radius: 10px; padding: 15px; }
-        #number-equation { font-size: 2.5em; margin: 20px 0; color: #37474f; font-weight: bold; }
-        
-        /* 버튼 간격 대폭 확장 */
-        .choices { display: flex; justify-content: center; gap: 40px; margin-top: 30px; margin-bottom: 30px; }
-        .choice-btn { font-size: 1.5em; padding: 20px 35px; cursor: pointer; background-color: #ffffff; border: 4px solid #00897b; border-radius: 20px; color: #00897b; font-weight: bold; transition: 0.2s; min-width: 100px; }
-        .choice-btn:hover { background-color: #00897b; color: white; }
-        
-        #feedback { font-size: 1.5em; margin-top: 20px; font-weight: bold; min-height: 45px; }
-        .level-btn { font-size: 1em; padding: 10px 15px; margin: 8px; cursor: pointer; border: none; border-radius: 8px; color: white; }
+        body { text-align: center; font-family: sans-serif; padding: 20px; }
+        .box { border: 2px solid #ccc; padding: 20px; display: inline-block; border-radius: 10px; }
+        .fruit-area { font-size: 2em; margin: 20px; }
+        .btn { font-size: 1.5em; margin: 10px; padding: 15px 30px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="game-container">
-    <h1>🍎 과일 산수 퀴즈 🍓</h1>
-    <div id="level-info"></div>
-    <div id="fruits-display"></div>
-    <div id="number-equation" style="display: none;"></div>
-
-    <div class="choices" id="choices-container"></div>
-    
-    <div id="feedback"></div>
-    <div id="score" style="margin-top:20px; font-size: 1.2em;">점수: 0</div>
-    
-    <hr style="margin: 20px 0;">
-    <div>
-        난이도 선택:<br>
-        <button onclick="setLevel(1)" class="level-btn" style="background-color: #4caf50;">1단계 (더하기)</button>
-        <button onclick="setLevel(2)" class="level-btn" style="background-color: #2196f3;">2단계 (1~50)</button>
-        <button onclick="setLevel(3)" class="level-btn" style="background-color: #f44336;">3단계 (1~100)</button>
-    </div>
+<div class="box">
+    <h1>과일 산수 퀴즈</h1>
+    <div id="question" style="font-size: 2em; margin: 20px;">준비중...</div>
+    <div id="choices"></div>
+    <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
 </div>
 
 <script>
-    const fruits = ["🍎", "🍐", "🍇", "🍋", "🍊", "🍉", "🍓"];
-    let currentAnswer = 0, score = 0, currentLevel = 1;
+    let answer = 0;
 
-    function setLevel(lvl) {
-        currentLevel = lvl;
-        score = 0;
-        document.getElementById('score').innerText = "점수: 0";
-        document.getElementById('level-info').innerText = lvl === 1 ? "1단계: 10 이하 더하기" : `${lvl}단계 (${lvl === 2 ? 50 : 100}까지 혼합)`;
+    function startGame() {
+        let n1 = Math.floor(Math.random() * 5) + 1;
+        let n2 = Math.floor(Math.random() * 5) + 1;
+        answer = n1 + n2;
         
-        document.getElementById('fruits-display').style.display = (lvl === 1) ? 'flex' : 'none';
-        document.getElementById('number-equation').style.display = (lvl === 1) ? 'none' : 'block';
-        generateQuestion();
-    }
-
-    function generateQuestion() {
-        let num1, num2, type;
+        let fruits = "";
+        for(let i=0; i<n1; i++) fruits += "🍎";
+        fruits += " + ";
+        for(let i=0; i<n2; i++) fruits += "🍎";
         
-        if (currentLevel === 1) {
-            type = '+';
-            num1 = Math.floor(Math.random() * 9) + 1;
-            num2 = Math.floor(Math.random() * (10 - num1)) + 1;
-            currentAnswer = num1 + num2;
-            
-            let displayHTML = "";
-            let f = fruits[Math.floor(Math.random() * fruits.length)];
-            for(let i=0; i<num1; i++) displayHTML += `<span>${f}</span>`;
-            displayHTML += `<span style="margin:0 15px; font-weight:bold;">+</span>`;
-            for(let i=0; i<num2; i++) displayHTML += `<span>${f}</span>`;
-            document.getElementById('fruits-display').innerHTML = displayHTML;
-        } else {
-            type = Math.random() > 0.5 ? '+' : '-';
-            const max = (currentLevel === 2) ? 50 : 100;
-            num1 = Math.floor(Math.random() * max) + 1;
-            num2 = Math.floor(Math.random() * max) + 1;
-            
-            if (type === '-') {
-                if (num1 < num2) [num1, num2] = [num2, num1];
-                currentAnswer = num1 - num2;
-            } else {
-                currentAnswer = num1 + num2;
-            }
-            document.getElementById('number-equation').innerText = `${num1} ${type} ${num2} = ?`;
-        }
-
-        renderChoices();
-        document.getElementById('feedback').innerText = "";
-    }
-
-    function renderChoices() {
-        const container = document.getElementById('choices-container');
-        container.innerHTML = '';
-        let choices = [currentAnswer];
+        document.getElementById('question').innerHTML = fruits;
         
-        while(choices.length < 3) {
-            let offset = Math.floor(Math.random() * 5) + 1;
-            let fake = Math.random() > 0.5 ? currentAnswer + offset : currentAnswer - offset;
-            if (fake > 0 && !choices.includes(fake)) choices.push(fake);
-        }
+        let choicesDiv = document.getElementById('choices');
+        choicesDiv.innerHTML = "";
         
-        choices.sort(() => Math.random() - 0.5);
-        choices.forEach(val => {
-            let btn = document.createElement('button');
-            btn.className = 'choice-btn';
-            btn.innerText = val;
-            btn.onclick = function() { checkAnswer(val); };
-            container.appendChild(btn);
+        let options = [answer, answer+1, answer-1];
+        options.sort(() => Math.random() - 0.5);
+        
+        options.forEach(opt => {
+            let b = document.createElement('button');
+            b.className = 'btn';
+            b.innerText = opt;
+            b.onclick = function() {
+                if(opt === answer) {
+                    document.getElementById('result').innerText = "정답!";
+                    setTimeout(startGame, 1000);
+                } else {
+                    document.getElementById('result').innerText = "틀렸어요!";
+                }
+            };
+            choicesDiv.appendChild(b);
         });
     }
 
-    function checkAnswer(val) {
-        const fb = document.getElementById('feedback');
-        if (val === currentAnswer) {
-            score += 10;
-            fb.innerText = "정답! 잘했어요! 🎉";
-            fb.style.color =
+    window.onload = startGame;
+</script>
+
+</body>
+</html>
