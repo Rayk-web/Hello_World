@@ -2,97 +2,201 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>과일 산수 퀴즈</title>
+    <title>알록달록 과일 산수 퀴즈</title>
     <style>
-        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #fff9c4; padding: 20px; }
-        #game-container { background: white; padding: 20px; border-radius: 20px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 80%; max-width: 600px; }
-        #fruits { font-size: 2em; margin: 20px 0; min-height: 100px; }
-        .fruit-icon { font-size: 1.5em; margin: 2px; }
-        input { font-size: 1.5em; padding: 10px; width: 100px; }
-        button { font-size: 1.2em; padding: 10px 20px; cursor: pointer; background-color: #ff9800; color: white; border: none; border-radius: 10px; }
-        #level-info { font-size: 1.2em; color: #555; margin-bottom: 10px; }
+        body { font-family: 'Jua', 'Arial', sans-serif; text-align: center; background-color: #e0f7fa; padding: 20px; }
+        #game-container { background: white; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 6px 20px rgba(0,0,0,0.15); width: 90%; max-width: 650px; }
+        h1 { color: #00695c; margin-bottom: 10px; }
+        #level-info { font-size: 1.3em; color: #00796b; margin-bottom: 15px; font-weight: bold; }
+        
+        /* 과일 표시 영역 스타일 */
+        #fruits-display { font-size: 1.5em; margin: 25px 0; min-height: 120px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; background-color: #f1f8e9; border-radius: 10px; padding: 10px; }
+        .fruit-item { margin: 5px; transition: transform 0.2s; }
+        .fruit-item:hover { transform: scale(1.2); }
+        
+        /* 숫자 및 기호 스타일 (1단계 외) */
+        #number-equation { font-size: 3.5em; margin: 30px 0; color: #37474f; font-weight: bold; }
+
+        input { font-size: 2em; padding: 10px; width: 120px; text-align: center; border: 3px solid #b2dfdb; border-radius: 10px; margin-right: 10px; }
+        button.check-btn { font-size: 1.5em; padding: 12px 30px; cursor: pointer; background-color: #00897b; color: white; border: none; border-radius: 10px; transition: background 0.3s; font-family: inherit; }
+        button.check-btn:hover { background-color: #00695c; }
+        
+        #feedback { font-size: 1.8em; margin-top: 25px; font-weight: bold; min-height: 40px; }
+        #score { font-size: 1.4em; margin-top: 15px; color: #555; }
+        
+        /* 레벨 버튼 스타일 */
+        .level-btn { font-size: 1.1em; padding: 8px 15px; margin: 5px; cursor: pointer; border: none; border-radius: 8px; color: white; font-family: inherit; transition: opacity 0.2s; }
+        .level-btn:hover { opacity: 0.8; }
+        
+        /* 구글 폰트 추가 (귀여운 느낌) */
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1>🍎 과일 산수 퀴즈 🍇</h1>
-    <div id="level-info">현재 단계: 1단계 (1~10)</div>
-    <div id="fruits"></div>
-    <div id="question"></div>
-    <input type="number" id="answer" placeholder="?" autofocus>
-    <button onclick="checkAnswer()">정답 확인</button>
+    <h1>🍎 알록달록 과일 산수 퀴즈 🍓</h1>
+    <div id="level-info">준비 중...</div>
+    
+    <!-- 1단계일 때 과일 이미지가 보이는 곳 -->
+    <div id="fruits-display"></div>
+    
+    <!-- 2, 3단계일 때 숫자 식이 보이는 곳 -->
+    <div id="number-equation" style="display: none;"></div>
+
+    <div>
+        <input type="number" id="answer" placeholder="?" autofocus inputmode="numeric">
+        <button class="check-btn" onclick="checkAnswer()">정답 확인</button>
+    </div>
+    
     <div id="feedback"></div>
     <div id="score">점수: 0</div>
-    <br>
-    <button onclick="setLevel(1)" style="background:#4caf50">1단계</button>
-    <button onclick="setLevel(2)" style="background:#2196f3">2단계</button>
-    <button onclick="setLevel(3)" style="background:#f44336">3단계</button>
+    
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+    <div style="margin-top: 10px;">
+        난이도 선택: 
+        <button onclick="setLevel(1)" class="level-btn" style="background-color: #4caf50;">1단계 (1~10)</button>
+        <button onclick="setLevel(2)" class="level-btn" style="background-color: #2196f3;">2단계 (1~50)</button>
+        <button onclick="setLevel(3)" class="level-btn" style="background-color: #f44336;">3단계 (1~100)</button>
+    </div>
 </div>
 
 <script>
+    // 과일 이모지 배열
+    const fruits = ["🍎", "🍐", "🍇", "🍋", "🍊", "🍉", "🍓"];
     let currentAnswer = 0;
     let score = 0;
     let currentLevel = 1;
 
+    // 레벨 설정 함수
     function setLevel(lvl) {
         currentLevel = lvl;
         score = 0;
-        document.getElementById('level-info').innerText = `현재 단계: ${lvl}단계 (${getMax()}까지)`;
-        document.getElementById('score').innerText = `점수: ${score}`;
+        updateScoreDisplay();
+        
+        const levelInfo = document.getElementById('level-info');
+        const fruitsDisplay = document.getElementById('fruits-display');
+        const numberEquation = document.getElementById('number-equation');
+
+        if (lvl === 1) {
+            levelInfo.innerText = "현재 단계: 1단계 (그림 보고 숫자 더하기)";
+            fruitsDisplay.style.display = 'flex'; // 과일 보이기
+            numberEquation.style.display = 'none'; // 숫자 식 숨기기
+        } else {
+            levelInfo.innerText = `현재 단계: ${lvl}단계 (${getMax()}까지 숫자 계산)`;
+            fruitsDisplay.style.display = 'none'; // 과일 숨기기
+            numberEquation.style.display = 'block'; // 숫자 식 보이기
+        }
+        
+        document.getElementById('feedback').innerText = "";
         generateQuestion();
     }
 
+    // 최대값 가져오기
     function getMax() {
-        return currentLevel === 1 ? 10 : (currentLevel === 2 ? 50 : 100);
+        if (currentLevel === 1) return 10;
+        if (currentLevel === 2) return 50;
+        return 100;
     }
 
+    // 랜덤 과일 하나 선택
+    function getRandomFruit() {
+        return fruits[Math.floor(Math.random() * fruits.length)];
+    }
+
+    // 문제 생성 함수
     function generateQuestion() {
         const max = getMax();
-        const num1 = Math.floor(Math.random() * max) + 1;
-        const num2 = Math.floor(Math.random() * max) + 1;
-        const type = Math.random() > 0.5 ? '+' : '-';
+        let num1 = Math.floor(Math.random() * max) + 1;
+        let num2 = Math.floor(Math.random() * max) + 1;
         
-        let displayFruits = "";
-        const fruit = "🍎";
-        
-        // 1단계에서는 과일 개수를 직접 시각적으로 보여줌
-        if (currentLevel === 1) {
-            for(let i = 0; i < num1; i++) displayFruits += fruit;
-            displayFruits += (type === '+' ? " + " : " - ");
-            for(let i = 0; i < num2; i++) displayFruits += fruit;
-        } else {
-            displayFruits = `<h2>${num1} ${type} ${num2} = ?</h2>`;
-        }
+        // 50% 확률로 더하기 또는 빼기
+        let type = Math.random() > 0.5 ? '+' : '-';
 
-        document.getElementById('fruits').innerHTML = displayFruits;
-        
+        // 빼기일 경우 결과가 음수가 되지 않도록 조정
         if (type === '-') {
-            const big = Math.max(num1, num2);
-            const small = Math.min(num1, num2);
-            currentAnswer = big - small;
-            document.getElementById('question').innerHTML = `${big} - ${small} = ?`;
+            if (num1 < num2) {
+                let temp = num1;
+                num1 = num2;
+                num2 = temp;
+            }
+            currentAnswer = num1 - num2;
         } else {
             currentAnswer = num1 + num2;
-            document.getElementById('question').innerHTML = `${num1} + ${num2} = ?`;
         }
-        
-        document.getElementById('answer').value = '';
+
+        // 1단계: 과일 이미지로 표시
+        if (currentLevel === 1) {
+            const fruit1 = getRandomFruit();
+            const fruit2 = getRandomFruit(); // 두 번째 과일은 다를 수 있게 함
+            let displayHTML = "";
+            
+            // 첫 번째 과일들
+            for (let i = 0; i < num1; i++) {
+                displayHTML += `<span class="fruit-item">${fruit1}</span>`;
+            }
+            
+            // 연산자
+            displayHTML += `<span style="margin: 0 15px; font-size: 1.2em; font-weight:bold;">${type === '+' ? '+' : '−'}</span>`;
+            
+            // 두 번째 과일들
+            for (let i = 0; i < num2; i++) {
+                displayHTML += `<span class="fruit-item">${fruit2}</span>`;
+            }
+            
+            document.getElementById('fruits-display').innerHTML = displayHTML;
+        } else {
+            // 2, 3단계: 숫자 식으로 표시
+            document.getElementById('number-equation').innerText = `${num1} ${type} ${num2} = ?`;
+        }
+
+        const answerInput = document.getElementById('answer');
+        answerInput.value = '';
+        answerInput.focus(); // 입력창에 자동으로 포커스
     }
 
+    // 정답 확인 함수
     function checkAnswer() {
-        const userAnswer = parseInt(document.getElementById('answer').value);
+        const answerInput = document.getElementById('answer');
+        const userAnswer = parseInt(answerInput.value);
+        const feedback = document.getElementById('feedback');
+        
+        if (isNaN(userAnswer)) {
+            feedback.innerText = "숫자를 입력해주세요! 🤔";
+            feedback.style.color = "#e65100";
+            return;
+        }
+
         if (userAnswer === currentAnswer) {
             score += 10;
-            document.getElementById('feedback').innerText = "정답! 참 잘했어요! 🎉";
+            feedback.innerText = "정답! 참 잘했어요! 🎉";
+            feedback.style.color = "#2e7d32"; // 초록색
         } else {
-            document.getElementById('feedback').innerText = `아쉬워요! 정답은 ${currentAnswer}입니다.`;
+            feedback.innerText = `아쉬워요! 정답은 ${currentAnswer}입니다.`;
+            feedback.style.color = "#c62828"; // 빨간색
         }
-        document.getElementById('score').innerText = `점수: ${score}`;
+        
+        updateScoreDisplay();
+        
+        // 1.5초 후 다음 문제 생성
         setTimeout(generateQuestion, 1500);
     }
 
+    // 점수 표시 업데이트
+    function updateScoreDisplay() {
+        document.getElementById('score').innerText = `점수: ${score}`;
+    }
+
+    // 엔터키 입력 지원 (입력창에서 엔터 누르면 정답 확인 버튼 클릭)
+    document.getElementById('answer').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            checkAnswer();
+        }
+    });
+
+    // 게임 초기화 (1단계로 시작)
     setLevel(1);
+
 </script>
 
 </body>
