@@ -2,74 +2,97 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>산수 퀴즈 대작전</title>
+    <title>과일 산수 퀴즈</title>
     <style>
-        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f0f8ff; padding: 50px; }
-        #game-container { background: white; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; }
-        #question { font-size: 3em; margin: 20px 0; color: #34495e; }
-        input { font-size: 1.5em; padding: 10px; width: 150px; text-align: center; }
-        button { font-size: 1.5em; padding: 10px 20px; cursor: pointer; background-color: #27ae60; color: white; border: none; border-radius: 10px; }
-        #feedback { font-size: 1.5em; margin-top: 20px; font-weight: bold; }
-        #score { font-size: 1.2em; margin-top: 10px; }
+        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #fff9c4; padding: 20px; }
+        #game-container { background: white; padding: 20px; border-radius: 20px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 80%; max-width: 600px; }
+        #fruits { font-size: 2em; margin: 20px 0; min-height: 100px; }
+        .fruit-icon { font-size: 1.5em; margin: 2px; }
+        input { font-size: 1.5em; padding: 10px; width: 100px; }
+        button { font-size: 1.2em; padding: 10px 20px; cursor: pointer; background-color: #ff9800; color: white; border: none; border-radius: 10px; }
+        #level-info { font-size: 1.2em; color: #555; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1>산수 퀴즈 대작전!</h1>
+    <h1>🍎 과일 산수 퀴즈 🍇</h1>
+    <div id="level-info">현재 단계: 1단계 (1~10)</div>
+    <div id="fruits"></div>
     <div id="question"></div>
-    <input type="number" id="answer" placeholder="정답" autofocus>
-    <button onclick="checkAnswer()">확인</button>
+    <input type="number" id="answer" placeholder="?" autofocus>
+    <button onclick="checkAnswer()">정답 확인</button>
     <div id="feedback"></div>
     <div id="score">점수: 0</div>
+    <br>
+    <button onclick="setLevel(1)" style="background:#4caf50">1단계</button>
+    <button onclick="setLevel(2)" style="background:#2196f3">2단계</button>
+    <button onclick="setLevel(3)" style="background:#f44336">3단계</button>
 </div>
 
 <script>
     let currentAnswer = 0;
     let score = 0;
+    let currentLevel = 1;
+
+    function setLevel(lvl) {
+        currentLevel = lvl;
+        score = 0;
+        document.getElementById('level-info').innerText = `현재 단계: ${lvl}단계 (${getMax()}까지)`;
+        document.getElementById('score').innerText = `점수: ${score}`;
+        generateQuestion();
+    }
+
+    function getMax() {
+        return currentLevel === 1 ? 10 : (currentLevel === 2 ? 50 : 100);
+    }
 
     function generateQuestion() {
+        const max = getMax();
+        const num1 = Math.floor(Math.random() * max) + 1;
+        const num2 = Math.floor(Math.random() * max) + 1;
         const type = Math.random() > 0.5 ? '+' : '-';
-        let num1 = Math.floor(Math.random() * 50) + 1;
-        let num2 = Math.floor(Math.random() * 50) + 1;
-
-        if (type === '-') {
-            // 빼기에서 결과가 음수가 되지 않도록 조정
-            if (num1 < num2) [num1, num2] = [num2, num1];
-            currentAnswer = num1 - num2;
+        
+        let displayFruits = "";
+        const fruit = "🍎";
+        
+        // 1단계에서는 과일 개수를 직접 시각적으로 보여줌
+        if (currentLevel === 1) {
+            for(let i = 0; i < num1; i++) displayFruits += fruit;
+            displayFruits += (type === '+' ? " + " : " - ");
+            for(let i = 0; i < num2; i++) displayFruits += fruit;
         } else {
-            currentAnswer = num1 + num2;
+            displayFruits = `<h2>${num1} ${type} ${num2} = ?</h2>`;
         }
 
-        document.getElementById('question').innerText = `${num1} ${type} ${num2} = ?`;
+        document.getElementById('fruits').innerHTML = displayFruits;
+        
+        if (type === '-') {
+            const big = Math.max(num1, num2);
+            const small = Math.min(num1, num2);
+            currentAnswer = big - small;
+            document.getElementById('question').innerHTML = `${big} - ${small} = ?`;
+        } else {
+            currentAnswer = num1 + num2;
+            document.getElementById('question').innerHTML = `${num1} + ${num2} = ?`;
+        }
+        
         document.getElementById('answer').value = '';
-        document.getElementById('answer').focus();
     }
 
     function checkAnswer() {
         const userAnswer = parseInt(document.getElementById('answer').value);
-        const feedback = document.getElementById('feedback');
-        
         if (userAnswer === currentAnswer) {
             score += 10;
-            feedback.innerText = "정답이에요! 참 잘했어요! 🎉";
-            feedback.style.color = "#27ae60";
+            document.getElementById('feedback').innerText = "정답! 참 잘했어요! 🎉";
         } else {
-            feedback.innerText = `아쉬워요! 정답은 ${currentAnswer}였어요.`;
-            feedback.style.color = "#e74c3c";
+            document.getElementById('feedback').innerText = `아쉬워요! 정답은 ${currentAnswer}입니다.`;
         }
-        
         document.getElementById('score').innerText = `점수: ${score}`;
         setTimeout(generateQuestion, 1500);
     }
 
-    // 엔터키 입력 지원
-    document.getElementById('answer').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') checkAnswer();
-    });
-
-    generateQuestion();
+    setLevel(1);
 </script>
 
 </body>
