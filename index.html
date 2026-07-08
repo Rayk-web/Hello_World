@@ -1,63 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>과일 산수 게임</title>
+    <title>과일 산수 퀴즈</title>
     <style>
-        body { text-align: center; font-family: sans-serif; padding: 20px; }
-        .box { border: 2px solid #ccc; padding: 20px; display: inline-block; border-radius: 10px; }
-        .fruit-area { font-size: 2em; margin: 20px; }
-        .btn { font-size: 1.5em; margin: 10px; padding: 15px 30px; cursor: pointer; }
+        body { font-family: sans-serif; text-align: center; background-color: #e0f7fa; padding: 20px; }
+        #game-box { background: white; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        .display-area { font-size: 2em; margin: 30px 0; min-height: 100px; }
+        .choice-btn { font-size: 1.5em; padding: 15px 30px; margin: 0 20px; cursor: pointer; border-radius: 10px; border: 2px solid #00897b; background: white; }
+        .choice-btn:hover { background: #00897b; color: white; }
+        .level-btn { padding: 10px; margin: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h1>과일 산수 퀴즈</h1>
-    <div id="question" style="font-size: 2em; margin: 20px;">준비중...</div>
+<div id="game-box">
+    <h1>🍎 과일 산수 퀴즈 🍇</h1>
+    <div id="level-text">1단계 (1~10 더하기)</div>
+    <div class="display-area" id="question">준비중...</div>
     <div id="choices"></div>
-    <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+    <div id="feedback" style="margin-top: 20px; font-weight: bold;"></div>
+    <div id="score" style="margin-top: 10px;">점수: 0</div>
+    <hr>
+    <div>
+        <button class="level-btn" onclick="changeLevel(1)">1단계</button>
+        <button class="level-btn" onclick="changeLevel(2)">2단계</button>
+        <button class="level-btn" onclick="changeLevel(3)">3단계</button>
+    </div>
 </div>
 
 <script>
-    let answer = 0;
+    let currentAns = 0;
+    let score = 0;
+    let level = 1;
+    const fruits = ["🍎", "🍐", "🍇", "🍋", "🍊", "🍉", "🍓"];
 
-    function startGame() {
-        let n1 = Math.floor(Math.random() * 5) + 1;
-        let n2 = Math.floor(Math.random() * 5) + 1;
-        answer = n1 + n2;
-        
-        let fruits = "";
-        for(let i=0; i<n1; i++) fruits += "🍎";
-        fruits += " + ";
-        for(let i=0; i<n2; i++) fruits += "🍎";
-        
-        document.getElementById('question').innerHTML = fruits;
-        
-        let choicesDiv = document.getElementById('choices');
-        choicesDiv.innerHTML = "";
-        
-        let options = [answer, answer+1, answer-1];
-        options.sort(() => Math.random() - 0.5);
-        
-        options.forEach(opt => {
-            let b = document.createElement('button');
-            b.className = 'btn';
-            b.innerText = opt;
-            b.onclick = function() {
-                if(opt === answer) {
-                    document.getElementById('result').innerText = "정답!";
-                    setTimeout(startGame, 1000);
-                } else {
-                    document.getElementById('result').innerText = "틀렸어요!";
-                }
-            };
-            choicesDiv.appendChild(b);
-        });
+    function changeLevel(l) {
+        level = l;
+        score = 0;
+        document.getElementById('score').innerText = "점수: 0";
+        document.getElementById('level-text').innerText = l + "단계";
+        nextQuestion();
     }
 
-    window.onload = startGame;
-</script>
+    function nextQuestion() {
+        let n1, n2, type, qText;
+        if(level === 1) {
+            type = '+';
+            n1 = Math.floor(Math.random() * 9) + 1;
+            n2 = Math.floor(Math.random() * (10 - n1)) + 1;
+            currentAns = n1 + n2;
+            qText = "";
+            let f = fruits[Math.floor(Math.random()*fruits.length)];
+            for(let i=0; i<n1; i++) qText += f;
+            qText += " + ";
+            for(let i=0; i<n2; i++) qText += f;
+        } else {
+            let max = (level === 2) ? 50 : 100;
+            type = (Math.random() > 0.5) ? '+' : '-';
+            n1 = Math.floor(Math.random() * max) + 1;
+            n2 = Math.floor(Math.random() * max) + 1;
+            if(type === '-') {
+                if(n1 < n2) [n1, n2] = [n2, n1];
+                currentAns = n1 - n2;
+            } else {
+                currentAns = n1 + n2;
+            }
+            qText = n1 + " " + type + " " + n2 + " = ?";
+        }
+        document.getElementById('question').innerHTML = qText;
+        renderButtons();
+    }
 
+    function renderButtons() {
+        let div = document.getElementById('choices');
+        div.innerHTML = "";
+        let opts = [currentAns, currentAns + 3, currentAns - 2].sort(() => Math.random() - 0.5);
+        opts.forEach(o => {
+            let b = document.createElement('button');
+            b.className = 'choice-btn';
+            b.innerText = o;
+            b.onclick = () => {
+                if(o === currentAns) {
+                    score += 10;
+                    document.getElementById('feedback').innerText = "정답! 🎉";
+                    document.getElementById('score').innerText = "점수: " + score;
+                    setTimeout(nextQuestion, 1000);
+                } else {
+                    document.getElementById('feedback').innerText = "틀렸어요!";
+                }
+            };
+            div.appendChild(b);
+        });
+    }
+    
+    changeLevel(1);
+</script>
 </body>
 </html>
