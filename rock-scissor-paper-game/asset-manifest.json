@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/testRepo3/rock-scissor-paper-game/static/css/main.99f80e4b.css",
+    "main.js": "/testRepo3/rock-scissor-paper-game/static/js/main.863766c2.js",
+    "static/js/453.d894b4b7.chunk.js": "/testRepo3/rock-scissor-paper-game/static/js/453.d894b4b7.chunk.js",
+    "index.html": "/testRepo3/rock-scissor-paper-game/index.html",
+    "main.99f80e4b.css.map": "/testRepo3/rock-scissor-paper-game/static/css/main.99f80e4b.css.map",
+    "main.863766c2.js.map": "/testRepo3/rock-scissor-paper-game/static/js/main.863766c2.js.map",
+    "453.d894b4b7.chunk.js.map": "/testRepo3/rock-scissor-paper-game/static/js/453.d894b4b7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.99f80e4b.css",
+    "static/js/main.863766c2.js"
+  ]
+}
