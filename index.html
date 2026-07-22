@@ -1,243 +1,120 @@
 <!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>김성한 - 자기소개서</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dongle&family=Nanum+Pen+Script&family=Poor+Story&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Dongle&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@100..900&family=Poor+Story&display=swap"
+      rel="stylesheet"
+    />
+    <title>glovio.com</title>
+    <style>
+      header {
+        /* height: 80px; */
+        background-color: #d3d7df;
+      }
+      .toplist {
+        display: flex;
+        justify-content: space-around;
+      }
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+      .logo {
+        font-family: "Noto Sans KR", sans-serif;
+        font-size: 40px;
+        width: 50%;
+        display: flex;
+        align-items: center;
+      }
 
-    body {
-      background-color: #f1f5f9;
-      color: #334155;
-      font-family: 'Poor Story','맑은 고딕','Malgun Gothic', sans-serif;
-      margin: 0;
+      .menu {
+        width: 50%;
+        list-style: none;
+        display: flex;
+        justify-content: space-around;
+        flex-direction: row;
+        align-items: center;
+      }
+      section {
+        width: 100%;
+        background-color: #F3F4F6;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: start;
+      }
 
-      font-weight: 400;
-      font-style: normal;
-    }
-
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 0 clamp(16px, 5vw, 40px);
-    }
-
-    /* 상단 네비게이션 바 */
-    .navbar {
-      background-color: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .nav-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 56px;
-    }
-
-    .nav-logo {
-      font-weight: 800;
-      color: #0f172a;
-      font-size: 16px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: clamp(12px, 4vw, 24px);
-    }
-
-    .nav-links a {
-      color: #64748b;
-      font-size: 14px;
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    .nav-links a:hover {
-      color: #3d6db1;
-    }
-
-    /* 상단 히어로 영역 */
-    .hero {
-      background-color: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
-      padding: clamp(2px, 2vw, 8px) 0 clamp(3px, 3vw, 8px);
-      text-align: center;
-    }
-
-    .avatar-img {
-      width: clamp(180px, 40vw, 260px);
-      height: clamp(180px, 40vw, 260px);
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid #ffffff;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 4px;
-      background-color: #f8fafc;
-    }
-
-    h1 {
-
-      font-family: "Dongle", sans-serif;
-      font-style: normal;
-
-      color: #0f172a;
-      font-size: clamp(24px, 6vw, 32px);
-      font-weight: 800;
-      margin: 0 0 6px 0;
-    }
-
-    .subtitle {
-      color: #64748b;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-    }
-
-    /* 본문 섹션 공통 */
-    section {
-      padding: clamp(28px, 6vw, 48px) 0;
-      scroll-margin-top: 56px;
-    }
-
-    section + section {
-      border-top: 1px solid #e2e8f0;
-    }
-
-    .section-title {
-      font-size: clamp(15px, 3.5vw, 17px);
-      font-weight: 700;
-      color: #0f172a;
-      margin: 0 0 20px 0;
-    }
-
-    /* 정보 리스트 */
-    .info-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-    }
-
-    .info-list li {
-      background-color: #ffffff;
-      padding: 16px;
-      border-radius: 14px;
-      font-size: clamp(14px, 4vw, 16px);
-      display: flex;
-      align-items: center;
-      border: 1px solid #edf2f7;
-    }
-
-    .info-list strong {
-      color: #3d6db1;
-      width: 60px;
-      flex-shrink: 0;
-      font-weight: 700;
-    }
-
-    /* 취미 섹션 */
-    .ray-banner-img {
-      width: 100%;
-      height: auto;
-      border-radius: 16px;
-      margin-bottom: 24px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-
-    .greeting {
-      font-size: clamp(14px, 3.6vw, 15px);
-      line-height: 1.6;
-      color: #475569;
-      margin: 0;
-      background-color: #f0f7ff;
-      padding: 16px;
-      border-radius: 14px;
-      border-left: 4px solid #3d6db1;
-    }
-
-    footer {
-      text-align: center;
-      color: #94a3b8;
-      font-size: 13px;
-      padding: 24px 0 40px;
-    }
-  </style>
-</head>
-
-<body>
-
-<nav class="navbar">
-  <div class="container nav-inner">
-    <span class="nav-logo">김성한</span>
-    <div class="nav-links">
-      <a href="#info">정보</a>
-      <a href="#hobby">취미</a>
-    </div>
-  </div>
-</nav>
-
-<header class="hero">
-  <div class="container">
-    <!-- 캐리커처 이미지 파일명 rayimg.png로 정상 연동 완료! -->
-    <img src="./img/rayimg.png" class="avatar-img" alt="김성한 캐리커처">
-    <h1>김성한</h1>
-    <div class="subtitle">PORTFOLIO & PROFILE</div>
-  </div>
-</header>
-
-<main>
-
-  <!-- 프로필 정보 -->
-  <section id="info">
-    <div class="container">
-      <p class="section-title">기본 정보</p>
-      <ul class="info-list">
-        <li>
-          <strong>이름</strong>
-          <span>김성한</span>
-        </li>
-        <li>
-          <strong>취미</strong>
-          <span>여행, 육아</span>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- 여행 & 육아 취미 -->
-  <section id="hobby">
-    <div class="container">
-      <p class="section-title">취미 이야기</p>
-      <img src="./img/ray.png" class="ray-banner-img" alt="여행과 육아 일러스트">
-      <p class="greeting">
-        새로운 세상을 발견하는 <b>여행</b>의 설렘과,<br>
-        아이와 함께 성장하는 <b>육아</b>의 기쁨을<br>
-        소중히 여기는 김성한입니다. 반갑습니다! 😊
-      </p>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <div class="container">
-    © 김성한
-  </div>
-</footer>
-
-</body>
+    
+      #greeting {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 130%;
+      }
+      .glovio {
+        
+        display: flex;
+        flex-direction: column;
+   
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="toplist">
+        <div class="logo">Global+via _Glovio_</div>
+        <ul class="menu">
+          <li>Home</li>
+          <li><a href="#greeting">인사말</a></li>
+          <li><a href="#intro">회사소개</a></li>
+          <li><a href="#mission">미션</a></li>
+          <li>고객센터</li>
+          <li>로그인</li>
+        </ul>
+      </div>
+    </header>
+    <main>
+      <section>
+        <article id="greeting">
+          <div class="glovio">
+            <img src="glovio.png" alt="" width="150%" />
+          </div>
+          <p>
+            서울에서 시작되는 글로벌 연결의 중심 GLOVIO는 대한민국 서울을
+            중심으로 세계의 사람, 기업, 제품, 그리고 기회를 연결하는 글로벌
+            비즈니스 플랫폼입니다. 우리는 단순한 수출회사가 아닙니다. 한국의
+            우수한 제품과 브랜드를 세계 시장과 연결하고, 각국의 파트너와 지속
+            가능한 비즈니스 생태계를 구축하는 글로벌 커넥션 기업(Global
+            Connection Company) 입니다.
+          </p>
+        </article>
+        <aritcle id="intro">
+          <h2>Who We Are</h2>
+          <br />
+          GLOVIO는 한국의 혁신적인 산업 역량과 글로벌 네트워크를 기반으로 다음
+          분야에서 사업을 전개하고 있습니다. 화장품 및 뷰티 제품 수출 OEM/ODM
+          제조 연계 해외 유통 파트너 발굴 브랜드 글로벌 진출 지원 국가 간
+          비즈니스 매칭 및 협업 구축 서울은 아시아의 기술·물류·문화 중심지이며,
+          GLOVIO는 이 전략적 위치를 활용하여 세계 시장과 한국을 연결합니다.
+          <br /><br />
+        <aritcle id="vison">
+          <h2>Vision</h2>
+          <br />
+          “대한민국을 세계와 연결하는 가장 신뢰받는 글로벌 비즈니스 플랫폼”
+          우리는 국경을 넘어 기업과 사람을 연결함으로써 새로운 시장과 새로운
+          가능성을 창출합니다.
+        </aritcle>
+        <aritcle id="mission">
+          <h2>Mission</h2>
+          <br />
+          Connect Korea. Connect Opportunities. Connect the World. GLOVIO의
+          미션은 다음과 같습니다. 한국의 경쟁력 있는 제품을 세계 시장에
+          소개한다. 해외 파트너에게 신뢰할 수 있는 공급망을 제공한다. 문화와
+          산업의 경계를 넘어 지속 가능한 글로벌 협업을 만든다. 중소기업도 세계
+          시장에 진출할 수 있는 연결 구조를 구축한다.
+        </aritcle>
+      </section>
+    </main>
+  </body>
 </html>
-
