@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KBO 프로야구 순위</title>
+    <style>
+      /* 구글 폰트 적용 (Noto Sans KR) */
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap");
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      /* 테이블 컨테이너 카드로 감싸기 */
+      .table-container {
+        width: 100%;
+        max-width: 900px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        padding: 24px;
+      }
+
+      caption {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+
+      /* 헤더 디자인 */
+      thead tr {
+        background-color: #1e293b;
+        color: #ffffff;
+      }
+
+      th {
+        padding: 16px 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: none;
+      }
+
+      /* 데이터 행 디자인 */
+      td {
+        padding: 14px 12px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #334155;
+      }
+
+      /* 얼룩말 패턴 (줄갈이 색상) */
+      tbody tr:nth-child(even) {
+        background-color: #f8fafc;
+      }
+
+      /* 마우스 호버 효과 */
+      tbody tr:hover {
+        background-color: #f1f5f9;
+        transition: background-color 0.2s ease-in-out;
+      }
+
+      /* 특정 열 강조 스타일 */
+      /* 순위 */
+      td:nth-child(1) {
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      /* 팀명 */
+      td:nth-child(2) {
+        font-weight: 600;
+        color: #1d4ed8;
+      }
+
+      /* 승률 강조 */
+      td:nth-child(7) {
+        font-weight: 700;
+        color: #059669;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="table-container">
+      <table>
+        <caption>
+          ⚾ KBO 프로야구 순위
+        </caption>
+        <thead>
+          <tr>
+            <th>순위</th>
+            <th>팀</th>
+            <th>경기</th>
+            <th>승</th>
+            <th>무</th>
+            <th>패</th>
+            <th>승률</th>
+            <th>게임차</th>
+            <th>연속</th>
+          </tr>
+        </thead>
+        <tbody id="teams">
+          <!-- JS에서 동적 생성 -->
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      const jsonUrl =
+        "https://prof-jwchi.github.io/kopo-front2026/Json/baseball.json";
+
+      fetch(jsonUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          const kboList = data.list;
+          const tableBody = document.getElementById("teams");
+
+          kboList.forEach((item) => {
+            const trTeam = document.createElement("tr");
+            trTeam.innerHTML = `
+              <td>${item.rank.rank}</td>
+              <td>${item.name}</td>
+              <td>${item.rank.game}</td>
+              <td>${item.rank.win}</td>
+              <td>${item.rank.draw}</td>
+              <td>${item.rank.loss}</td>
+              <td>${item.rank.wpct}</td>
+              <td>${item.rank.gb}</td>
+              <td>${item.rank.streak}</td>
+            `;
+            tableBody.appendChild(trTeam);
+          });
+        })
+        .catch((error) => console.error("데이터 로드 실패:", error));
+    </script>
+  </body>
+</html>
